@@ -292,6 +292,8 @@ Placetobe Sign Up Card
       },
 
       _showError: function() {
+        this.signedUp = false;
+        this.fire('sign-up-error');
         this._displayError = true;
       },
 
@@ -300,7 +302,12 @@ Placetobe Sign Up Card
       },
 
       _handleUserCreated: function(evt) {
-        this.$.auth.signIn(this.username, this.password, this.userRole);
+        this.signedUp = true;
+        this.fire('signed-up', {
+          username: this.username,
+          password: this.password,
+          userRole: this.userRole
+        });
       },
 
       _hasUserRole: function(userRole, currentUserRole) {
