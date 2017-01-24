@@ -44,17 +44,16 @@ Placetobe Sign Up Card
     <caas-auth
       id="auth"
       api-endpoint="[[apiEndpoint]]"
-      signed-in="{{signedIn}}"
       access-token="{{accessToken}}"
       on-user-created="_handleUserCreated"
       on-user-creation-error="_showError"
     ></caas-auth>
 
     <placetobe-card
-      title="[[_computeTitle(signedIn, userRoleLabel)]]"
+      title="[[_computeTitle(signedUp, userRoleLabel)]]"
     >
       <article slot="main">
-        <template is="dom-if" if="[[!signedIn]]">
+        <template is="dom-if" if="[[!signedUp]]">
 
           <form on-keypress="_handleSignInKeyPress">
 
@@ -164,7 +163,7 @@ Placetobe Sign Up Card
           </form>
         </template>
 
-        <template is="dom-if" if="[[signedIn]]">
+        <template is="dom-if" if="[[signedUp]]">
           <p>Dankjewel, je bent succesvol geregistreerd als [[userRoleLabel]]. <span hidden="[[!_hasUserRole(userRole, 'investor')]]">Vanaf nu kun je investeringen doen via Placetobe.</span></p>
         </template>
 
@@ -193,10 +192,11 @@ Placetobe Sign Up Card
           computed: '_computeUserRoleLabel(userRole)'
         },
 
-        signedIn: {
+        signedUp: {
           type: Boolean,
           value: false,
-          notify: true
+          notify: true,
+          readOnly: true
         },
 
         accessToken: {
@@ -268,8 +268,8 @@ Placetobe Sign Up Card
         })
       },
 
-      _computeTitle: function(signedIn, userRoleLabel) {
-        if(signedIn) return 'Geregistreerd';
+      _computeTitle: function(signedUp, userRoleLabel) {
+        if(signedUp) return 'Geregistreerd';
         return 'Registreren als ' + userRoleLabel;
       },
 
@@ -292,7 +292,7 @@ Placetobe Sign Up Card
       },
 
       _showError: function() {
-        this.signedUp = false;
+        this._setSignedUp(false);
         this.fire('sign-up-error');
         this._displayError = true;
       },
@@ -302,7 +302,7 @@ Placetobe Sign Up Card
       },
 
       _handleUserCreated: function(evt) {
-        this.signedUp = true;
+        this._setSignedUp(true);
         this.fire('signed-up', {
           username: this.username,
           password: this.password,
